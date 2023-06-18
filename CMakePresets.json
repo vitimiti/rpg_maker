@@ -1,0 +1,91 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 25
+  },
+  "configurePresets": [
+    {
+      "name": "common-config",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build/${presetName}",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": {
+          "type": "BOOL",
+          "value": "ON"
+        }
+      }
+    },
+    {
+      "name": "debug-config",
+      "inherits": "common-config",
+      "hidden": false,
+      "displayName": "Debug Configuration",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Debug"
+        }
+      }
+    },
+    {
+      "name": "release-config",
+      "inherits": "common-config",
+      "hidden": false,
+      "displayName": "Release Configuration",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Release"
+        }
+      }
+    },
+    {
+      "name": "relwithdebinfo-config",
+      "inherits": "common-config",
+      "hidden": false,
+      "displayName": "RelWithDebInfo Configuration",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "RelWithDebInfo"
+        }
+      }
+    },
+    {
+      "name": "minsizerel-config",
+      "inherits": "common-config",
+      "hidden": false,
+      "displayName": "MinSizeRel Configuration",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "MinSizeRel"
+        }
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug-build",
+      "configurePreset": "debug-config",
+      "displayName": "Debug Build"
+    },
+    {
+      "name": "release-build",
+      "configurePreset": "release-config",
+      "displayName": "Release Build"
+    },
+    {
+      "name": "relwithdebinfo-build",
+      "configurePreset": "relwithdebinfo-config",
+      "displayName": "RelWithDebInfo Build"
+    },
+    {
+      "name": "minsizerel-build",
+      "configurePreset": "minsizerel-config",
+      "displayName": "MinSizeRel Build"
+    }
+  ]
+}
