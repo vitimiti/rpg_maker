@@ -2,18 +2,26 @@ project(display_layer)
 
 # Include the required packages for the different systems
 if(RPGMK_USE_X11)
-  find_package(X11 REQUIRED)
+  if(NOT X11_FOUND)
+    find_package(X11 REQUIRED)
+  endif()
 endif()
 
 if(RPGMK_USE_OPENGL)
-  find_package(OpenGL REQUIRED)
+  if(NOT OPENGL_FOUND)
+    find_package(OpenGL REQUIRED)
+  endif()
 endif()
 
-list(APPEND PUBLIC_HEADERS)
+list(APPEND PUBLIC_HEADERS ${PROJECT_SOURCE_DIR}/include/rpgmk/dl/window.hpp
+     ${PROJECT_SOURCE_DIR}/include/rpgmk/dl/window_attributes.hpp)
 
 list(APPEND SOURCES)
 
 # The system specific sources
+if(RPGMK_USE_X11)
+  list(APPEND SOURCES ${PROJECT_SOURCE_DIR}/src/x11_opengl_window.cpp)
+endif()
 
 # Shared or static libraries
 if(BUILD_SHARED_LIBS)

@@ -100,3 +100,6 @@ endif()
 
 # Create a common variable to find the root directory safely
 set(RPGMK_SOURCE_DIR ${PROJECT_SOURCE_DIR})
+
+# Add the libraries
+add_subdirectory(${PROJECT_SOURCE_DIR}/display_layer)
