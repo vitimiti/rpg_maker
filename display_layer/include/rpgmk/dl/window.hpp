@@ -49,7 +49,9 @@ public:
   window(window&&)                         = delete;
   auto operator=(window const&) -> window& = delete;
   auto operator=(window&&) -> window&      = delete;
-  ~window();
+  ~window() noexcept;
+
+  auto show() -> void;
 
   [[nodiscard]] auto get_attributes() const -> window_attributes;
 

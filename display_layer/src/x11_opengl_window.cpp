@@ -34,47 +34,83 @@ window::window(rpgmk::dl::window_attributes const& attributes) {
 
   _root        = DefaultRootWindow(_display);
   _visual_info = glXChooseVisual(_display, 0, _attributes.data());
-
   if (_visual_info == nullptr) {
     throw std::runtime_error(
         "Unable to create visual information for GLX from the X11 display");
   }
 
-  _colormap = XCreateColormap(_display, _root, _visual_info->visual, AllocNone);
+  if (_colormap =
+          XCreateColormap(_display, _root, _visual_info->visual, AllocNone);
+      _colormap == BadAlloc || _colormap == BadColor || _colormap == BadMatch ||
+      _colormap == BadValue || _colormap == BadWindow) {
+    throw std::runtime_error("Unable to create the X11 color map");
+  }
 
   _set_window_attributes.colormap   = _colormap;
   _set_window_attributes.event_mask = ExposureMask | KeyPressMask;
 
-  _window = XCreateWindow(
-      _display, _root, static_cast<int>(attributes.x),
-      static_cast<int>(attributes.y), attributes.width, attributes.height,
-      attributes.border_width, _visual_info->depth, InputOutput,
-      _visual_info->visual, CWColormap | CWEventMask, &_set_window_attributes);
+  if (_window =
+          XCreateWindow(_display, _root, static_cast<int>(attributes.x),
+                        static_cast<int>(attributes.y), attributes.width,
+                        attributes.height, attributes.border_width,
+                        _visual_info->depth, InputOutput, _visual_info->visual,
+                        CWColormap | CWEventMask, &_set_window_attributes);
+      _window == BadAlloc || _window == BadColor || _window == BadCursor ||
+      _window == BadMatch || _window == BadPixmap || _window == BadValue ||
+      _window == BadWindow) {
+    throw std::runtime_error("Unable to create the X11 window");
+  }
 
-  XStoreName(_display, _window, attributes.title.c_str());
-  XSetIconName(_display, _window, attributes.icon_path.c_str());
-  XMapWindow(_display, _window);
-  glXMakeCurrent(_display, _window, _context);
+  if (auto error = XStoreName(_display, _window, attributes.title.c_str());
+      error == BadAlloc || error == BadWindow) {
+    throw std::runtime_error("Unable to set the X11 window title");
+  }
 
-  glEnable(GL_DEPTH_TEST);
+  if (auto error =
+          XSetIconName(_display, _window, attributes.icon_path.c_str());
+      error == BadAlloc || error == BadWindow) {
+    throw std::runtime_error("Unable to set the X11 icon name");
+  }
 }
 
-window::~window() {
+window::~window() noexcept {
   glXMakeCurrent(_display, None, nullptr);
   glXDestroyContext(_display, _context);
   XDestroyWindow(_display, _window);
   XCloseDisplay(_display);
 }
 
+auto window::show() -> void {
+  if (auto error = XMapWindow(_display, _window); error != Success) {
+    throw std::runtime_error("Unable to show the X11 window");
+  }
+
+  if (auto error = glXMakeCurrent(_display, _window, _context);
+      error != Success) {
+    throw std::runtime_error("Unable to make the current X11 GLX context");
+  }
+
+  glEnable(GL_DEPTH_TEST);
+}
+
 [[nodiscard]] auto window::get_attributes() const -> window_attributes {
   char* title = nullptr;
-  XFetchName(_display, _window, &title);
+  if (auto error = XFetchName(_display, _window, &title);
+      error == BadAlloc || error == BadWindow) {
+    throw std::runtime_error("Unable to get the X11 window name");
+  }
 
   char* icon = nullptr;
-  XGetIconName(_display, _window, &icon);
+  if (auto error = XGetIconName(_display, _window, &icon);
+      error == BadAlloc || error == BadWindow) {
+    throw std::runtime_error("Unable to get the X11 icon name");
+  }
 
   XWindowAttributes attributes;
-  XGetWindowAttributes(_display, _window, &attributes);
+  if (auto error = XGetWindowAttributes(_display, _window, &attributes);
+      error == BadDrawable || error == BadWindow) {
+    throw std::runtime_error("Unable to get the X11 window attributes");
+  }
 
   return {.title        = title == nullptr ? "" : title,
           .icon_path    = icon == nullptr ? "" : icon,
