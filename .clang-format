@@ -40,8 +40,16 @@ QualifierAlignment: Right
 IncludeBlocks: Regroup
 IncludeCategories:
   - Regex: '^"'
+    Priority: 4
+    SortPriority: 4
+    CaseSensitive: true
+  - Regex: "^<X11"
     Priority: 2
     SortPriority: 2
+    CaseSensitive: true
+  - Regex: "^<GL"
+    Priority: 3
+    SortPriority: 3
     CaseSensitive: true
   - Regex: "^<"
     Priority: 1

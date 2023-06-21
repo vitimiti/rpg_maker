@@ -25,8 +25,6 @@
 #ifndef RPGMK_DL_WINDOW_HPP
 #define RPGMK_DL_WINDOW_HPP
 
-#include <memory>
-
 #include "rpgmk/dl/window_attributes.hpp"
 
 #if RPGMK_X11
@@ -35,10 +33,11 @@
 #endif // Window API
 
 #if RPGMK_OPENGL
+#  include <array>
+
 #  include <GL/gl.h>
 #  include <GL/glu.h>
 #  include <GL/glx.h>
-#  include <array>
 #endif // Graphics API
 
 namespace rpgmk::dl {
